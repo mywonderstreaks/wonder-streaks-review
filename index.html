@@ -432,6 +432,382 @@ button,input,label{-webkit-appearance:none;appearance:none}
   text-transform:uppercase;color:var(--rose);
   display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:1px;
 }
+.hdr-name::before,.hdr-name::after{content:'';width:24px;height:1px;background:var(--blush);display:inline-block}
+.hdr-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1rem,4vw,1.2rem);font-weight:700;line-height:1.1;color:var(--dark);
+}
+.hdr-title em{color:var(--rose);font-style:italic}
+.hdr-sub{font-size:9.5px;color:var(--muted);margin-top:1px;font-weight:400}
+
+/* ── language bar ── */
+.lang-bar{flex-shrink:0;display:flex;justify-content:center;padding:3px 0 3px;gap:5px}
+.lb{
+  padding:2px 11px;border-radius:100px;border:1.5px solid var(--bdr);
+  background:var(--card);font-family:'Poppins',sans-serif;
+  font-size:10.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;
+}
+.lb.on{background:var(--dark);border-color:var(--dark);color:#fff}
+
+/* ── progress ── */
+.prog{flex-shrink:0;display:flex;align-items:center;padding:3px 0 4px}
+.pd{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.pd:not(:last-child)::after{
+  content:'';position:absolute;top:9px;left:calc(50% + 10px);right:calc(-50% + 10px);
+  height:2px;background:var(--blush);transition:background .3s;z-index:0;
+}
+.pd.dn:not(:last-child)::after,.pd.on:not(:last-child)::after{background:var(--gold)}
+.pd-dot{
+  width:18px;height:18px;border-radius:50%;border:2px solid var(--blush);
+  background:var(--cream);display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:700;color:var(--muted);transition:all .25s;z-index:1;
+  font-family:'Poppins',sans-serif;position:relative;flex-shrink:0;
+}
+.pd.on .pd-dot{background:var(--rose);border-color:var(--rose);color:#fff;transform:scale(1.2);box-shadow:0 0 0 3px rgba(212,86,122,.2)}
+.pd.dn .pd-dot{background:var(--gold);border-color:var(--gold);color:#fff}
+
+/* ── step card ── */
+.step{
+  display:none;flex-direction:column;flex:1;min-height:0;
+  background:var(--card);border:1.5px solid var(--bdr);border-radius:18px;
+  padding:10px 11px 8px;margin-bottom:5px;
+  animation:sIn .3s cubic-bezier(.22,1,.36,1) both;
+  overflow:hidden;position:relative;
+  /* Safari: force GPU layer so border-radius clips children correctly */
+  -webkit-transform:translateZ(0);transform:translateZ(0);
+  box-shadow:0 6px 28px rgba(212,86,122,.08),0 1px 4px rgba(212,86,122,.04);
+}
+.step.on{display:flex}
+/* gradient top accent stripe */
+.step::before{
+  content:'';position:absolute;top:0;left:15%;right:15%;height:2.5px;
+  background:linear-gradient(90deg,transparent,var(--rose),var(--gold),var(--rose),transparent);
+  border-radius:0 0 4px 4px;opacity:.5;
+}
+/* watermark petal */
+.step::after{
+  content:'🌸';position:absolute;bottom:36px;right:9px;
+  font-size:32px;opacity:.055;pointer-events:none;transform:rotate(15deg);
+}
+@keyframes sIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+.s-top{flex-shrink:0;margin-bottom:6px}
+.s-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:linear-gradient(135deg,var(--rose),var(--rose-d));
+  color:#fff;font-size:8px;font-weight:700;letter-spacing:.07em;
+  padding:2px 9px;border-radius:100px;margin-bottom:3px;
+}
+.s-q{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(.88rem,3.2vw,1.05rem);font-weight:700;
+  line-height:1.2;color:var(--dark);margin-bottom:1px;
+}
+.s-hint{font-size:9.5px;color:var(--muted);font-weight:500}
+
+/* ── options ── */
+.opts{flex:1;display:grid;gap:5px;align-content:stretch;margin-bottom:6px;min-height:0}
+.opts.g2{grid-template-columns:1fr 1fr}
+.opts.g1{grid-template-columns:1fr}
+
+.opt{
+  background:#FFFCFA;border:1.5px solid var(--bdr);border-radius:12px;cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:2px;
+  font-family:'Poppins',sans-serif;color:var(--dark);
+  padding:5px 6px;min-height:0;position:relative;overflow:hidden;
+}
+.opt::after{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(135deg,rgba(212,86,122,.06),transparent);
+  opacity:0;transition:opacity .15s;pointer-events:none;
+}
+.opt:active{transform:scale(.97)}
+.opt:hover{border-color:var(--rose);box-shadow:0 3px 12px rgba(212,86,122,.14)}
+.opt:hover::after,.opt.sel::after{opacity:1}
+.opt.sel{border-color:var(--rose);background:var(--rose-l);box-shadow:0 3px 12px rgba(212,86,122,.2)}
+.opt.sel .ic{transform:scale(1.18)}
+.ic{font-size:18px;line-height:1;transition:transform .15s}
+.lb2{font-size:11px;font-weight:600;line-height:1.2;text-align:center;position:relative;z-index:1}
+
+/* selected checkmark badge */
+.opt.sel::after{opacity:1}
+.opt .chk{
+  display:none;position:absolute;top:5px;right:5px;
+  width:15px;height:15px;border-radius:50%;
+  background:var(--rose);color:#fff;font-size:9px;
+  align-items:center;justify-content:center;z-index:2;
+}
+.opt.sel .chk{display:flex}
+
+/* shake on disabled tap */
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.btn-n.shake{animation:shake .3s ease}
+
+/* ripple */
+@keyframes ripple{from{transform:scale(0);opacity:.35}to{transform:scale(3);opacity:0}}
+.ripple{position:absolute;border-radius:50%;background:rgba(212,86,122,.3);width:40px;height:40px;margin:-20px;pointer-events:none;animation:ripple .5s linear}
+
+/* emotion tiles – horizontal */
+.opts.emo .opt{flex-direction:row;gap:9px;justify-content:flex-start;padding:8px 11px}
+.opts.emo .ic{font-size:22px}
+.opts.emo .lb2{font-size:12.5px;font-weight:600;text-align:left;line-height:1.3}
+
+/* ── stylist chips ── */
+.chips{flex:1;display:flex;flex-wrap:wrap;align-content:flex-start;gap:7px;margin-bottom:6px;min-height:0;padding-top:2px}
+.chip{
+  display:flex;align-items:center;gap:6px;
+  background:#FFFCFA;border:1.5px solid var(--bdr);border-radius:100px;
+  padding:6px 14px;cursor:pointer;transition:all .15s;
+  font-family:'Poppins',sans-serif;font-size:12.5px;font-weight:600;color:var(--dark);
+}
+.chip:hover{border-color:var(--rose);background:var(--rose-ll)}
+.chip.sel{border-color:var(--rose);background:var(--rose-l);color:var(--rose-d)}
+.chip .av{
+  width:25px;height:25px;border-radius:50%;background:var(--blush);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;transition:background .15s;
+}
+.chip.sel .av{background:var(--rose);color:#fff}
+.skip-line{font-size:9.5px;color:var(--muted);flex-shrink:0;margin-top:2px;font-style:italic}
+
+/* ── nav ── */
+.nav{flex-shrink:0;display:flex;align-items:center;margin-top:auto;gap:7px}
+.btn-n{
+  flex:1;background:linear-gradient(135deg,var(--rose),var(--rose-d));
+  color:#fff;border:none;border-radius:11px;padding:10px 14px;
+  font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;transition:all .15s;
+  display:grid;place-items:center;  /* Safari-safe centering in buttons */
+  -webkit-appearance:none;appearance:none;
+}
+.btn-n:hover:not(:disabled){box-shadow:0 5px 20px rgba(212,86,122,.38);transform:translateY(-1px)}
+.btn-n:active:not(:disabled){transform:scale(.98)}
+.btn-n:disabled{opacity:.38;cursor:not-allowed;background:linear-gradient(135deg,#c9879e,#a05068)}
+.btn-b{
+  background:none;border:1.5px solid var(--bdr);border-radius:11px;
+  padding:10px 13px;cursor:pointer;color:var(--muted);font-size:11px;font-weight:600;
+  transition:all .15s;display:flex;align-items:center;gap:3px;white-space:nowrap;
+  -webkit-appearance:none;appearance:none;
+}
+.btn-b:hover{border-color:var(--rose);color:var(--rose)}
+
+/* ── review output ── */
+#sr{overflow-y:auto}
+#sr .rev-box{
+  flex:1;overflow-y:auto;
+  background:linear-gradient(155deg,var(--rose-ll) 0%,#FFFCF9 60%);
+  border:1.5px solid var(--blush);border-radius:14px;
+  padding:14px 13px 12px 16px;margin-bottom:7px;position:relative;min-height:0;
+}
+#sr .rev-box::before{
+  content:'\201C';position:absolute;top:-4px;left:10px;
+  font-family:'Playfair Display',serif;font-size:64px;
+  color:var(--blush);line-height:1;pointer-events:none;
+}
+#sr .rev-txt{font-size:13px;line-height:1.8;color:var(--dark);position:relative;z-index:1;font-weight:400}
+
+.tip-row{
+  flex-shrink:0;font-size:10px;color:var(--muted);
+  background:var(--gold-l);border:1px solid #F0DBA0;border-radius:10px;
+  padding:5px 10px;margin-bottom:5px;display:flex;gap:6px;line-height:1.5;
+}
+
+/* pulsing post button */
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(212,86,122,.45)}
+  60%{box-shadow:0 0 0 9px rgba(212,86,122,0)}
+}
+
+.abtns{flex-shrink:0;display:flex;flex-direction:column;gap:5px}
+.abtn{
+  width:100%;border:none;border-radius:11px;padding:10px;
+  font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;
+}
+.abtn-gmap{
+  background:linear-gradient(135deg,var(--rose),var(--rose-d));color:#fff;
+  animation:pulse 2s infinite;
+}
+.abtn-gmap:hover{opacity:.92;transform:translateY(-1px)}
+
+.nudge-row{
+  flex-shrink:0;text-align:center;
+  font-size:10.5px;color:var(--muted);
+  padding:2px 0;
+}
+.abtn-wa{background:var(--wa);color:#fff;font-size:13px;padding:10px}
+.abtn-wa:hover{background:var(--wa-d)}
+.abtn-restart{background:none;color:var(--muted);font-size:11.5px;padding:4px;border:none;text-decoration:underline;text-underline-offset:2px;text-decoration-color:var(--blush)}
+.abtn-restart:hover{color:var(--rose);cursor:pointer}
+
+/* ── review language tabs ── */
+.rev-tabs-row{display:flex;gap:5px;flex-shrink:0;margin-bottom:6px}
+.rev-tab{
+  flex:1;padding:6px 4px;border-radius:10px;border:1.5px solid var(--bdr);
+  background:var(--card);font-family:'Poppins',sans-serif;
+  font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;
+}
+.rev-tab.on{background:var(--rose);border-color:var(--rose);color:#fff}
+
+/* ── photo step ── */
+#photoLabel{transition:all .18s}
+#photoLabel:hover{border-color:var(--rose)!important;background:var(--blush)!important;transform:scale(1.01)}
+#photoLabel:active{transform:scale(.98)}
+
+/* ── confetti ── */
+.cw{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:999;overflow:hidden}
+.cp{position:absolute;animation:cf linear both}
+@keyframes cf{from{transform:translateY(-10px) rotate(0);opacity:1}to{transform:translateY(100vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="bg-g"></div>
+<div class="bg-p" id="petals"></div>
+<div class="cw" id="cw"></div>
+
+<div class="shell">
+
+  <!-- ── Header ── -->
+  <header class="hdr">
+    <div class="hdr-name">Wonder Streaks</div>
+    <div class="hdr-title">How was your <em>visit?</em></div>
+    <div class="hdr-sub" id="hSub">Takes 60 seconds · means a lot to us 🌸</div>
+  </header>
+
+  <!-- ── Language Toggle (A: English / Kannada / Hindi) ── -->
+  <div class="lang-bar">
+    <button class="lb on" id="lbEn" onclick="setLang('en')">English</button>
+    <button class="lb"    id="lbKn" onclick="setLang('kn')">ಕನ್ನಡ</button>
+    <button class="lb"    id="lbHi" onclick="setLang('hi')">हिंदी</button>
+  </div>
+
+  <!-- Progress dots -->
+  <div class="prog" id="pb"></div>
+
+  <!-- ════════════════════════════════════════════════════
+       STEP 1 — Service (kept as-is per instructions)
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="s1">
+    <div class="s-top">
+      <span class="s-badge" id="b1">Step 1 of 6</span>
+      <div class="s-q"    id="q1">What did you get done today?</div>
+      <div class="s-hint" id="h1">You can pick more than one ✨</div>
+    </div>
+    <div class="opts g2" id="services">
+      <button class="opt" data-v="waxing and threading">          <span class="chk">✓</span><span class="ic">🌸</span><span class="lb2" id="sv1">Waxing &amp; Threading</span></button>
+      <button class="opt" data-v="facial and skin care">          <span class="chk">✓</span><span class="ic">🧖‍♀️</span><span class="lb2" id="sv2">Facial &amp; Skin Care</span></button>
+      <button class="opt" data-v="haircut and styling">           <span class="chk">✓</span><span class="ic">✂️</span><span class="lb2" id="sv3">Hair Cut &amp; Styling</span></button>
+      <button class="opt" data-v="hair colour and highlights">    <span class="chk">✓</span><span class="ic">🎨</span><span class="lb2" id="sv4">Colour &amp; Highlights</span></button>
+      <button class="opt" data-v="hair smoothening and hair spa"> <span class="chk">✓</span><span class="ic">💆‍♀️</span><span class="lb2" id="sv5">Smoothening / Hair Spa</span></button>
+      <button class="opt" data-v="nail art and pedicure manicure"><span class="chk">✓</span><span class="ic">💅</span><span class="lb2" id="sv6">Pedicure &amp; Manicure</span></button>
+      <button class="opt" data-v="bridal and party makeup">       <span class="chk">✓</span><span class="ic">💄</span><span class="lb2" id="sv7">Bridal / Party Makeup</span></button>
+      <button class="opt" data-v="mehendi">                       <span class="chk">✓</span><span class="ic">🪷</span><span class="lb2" id="sv8">Mehendi</span></button>
+    </div>
+    <div class="nav">
+      <button class="btn-n" id="n1" onclick="go(2)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       STEP 2 — Emotion (B: new step — how do you feel)
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="s2">
+    <div class="s-top">
+      <span class="s-badge" id="b2">Step 2 of 6</span>
+      <div class="s-q"    id="q2">How are you feeling right now?</div>
+      <div class="s-hint" id="h2">Be honest — we love to know! 💕</div>
+    </div>
+    <div class="opts g1 emo" id="feelings">
+      <button class="opt" data-v="wow">  <span class="ic">😍</span><span class="lb2" id="f1">I look amazing! Totally loving it</span></button>
+      <button class="opt" data-v="happy"><span class="ic">😊</span><span class="lb2" id="f2">Really happy with how it turned out</span></button>
+      <button class="opt" data-v="fresh"><span class="ic">🥰</span><span class="lb2" id="f3">Feeling so fresh and pampered</span></button>
+      <button class="opt" data-v="exact"><span class="ic">👌</span><span class="lb2" id="f4">Got exactly what I wanted</span></button>
+    </div>
+    <div class="nav">
+      <button class="btn-b" onclick="go(1)">← Back</button>
+      <button class="btn-n" id="n2" onclick="go(3)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       STEP 3 — Staff (C: simple language)
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="s3">
+    <div class="s-top">
+      <span class="s-badge" id="b3">Step 3 of 6</span>
+      <div class="s-q"    id="q3">How was the staff?</div>
+      <div class="s-hint" id="h3">Pick one that fits best</div>
+    </div>
+    <div class="opts g1" id="expertise">
+      <button class="opt" data-v="skilled">  <span class="ic">🏆</span><span class="lb2" id="e1">They really know what they're doing</span></button>
+      <button class="opt" data-v="attentive"><span class="ic">🤝</span><span class="lb2" id="e2">Very friendly, listened to me well</span></button>
+      <button class="opt" data-v="helpful">  <span class="ic">💡</span><span class="lb2" id="e3">Gave really good tips and advice</span></button>
+      <button class="opt" data-v="careful">  <span class="ic">🔍</span><span class="lb2" id="e4">Very careful, took their time</span></button>
+    </div>
+    <div class="nav">
+      <button class="btn-b" onclick="go(2)">← Back</button>
+      <button class="btn-n" id="n3" onclick="go(4)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       STEP 4 — Salon vibe
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="s4">
+    <div class="s-top">
+      <span class="s-badge" id="b4">Step 4 of 6</span>
+      <div class="s-q"    id="q4">What did you like about the salon?</div>
+      <div class="s-hint" id="h4">Pick one</div>
+    </div>
+    <div class="opts g2" id="ambience">
+      <button class="opt" data-v="clean">    <span class="ic">✨</span><span class="lb2" id="a1">Very clean &amp; hygienic</span></button>
+      <button class="opt" data-v="relaxing"> <span class="ic">🛋️</span><span class="lb2" id="a2">Relaxing &amp; comfortable</span></button>
+      <button class="opt" data-v="products"> <span class="ic">🧴</span><span class="lb2" id="a3">Good quality products</span></button>
+      <button class="opt" data-v="interiors"><span class="ic">🌷</span><span class="lb2" id="a4">Nice &amp; well-maintained</span></button>
+    </div>
+    <div class="nav">
+      <button class="btn-b" onclick="go(3)">← Back</button>
+      <button class="btn-n" id="n4" onclick="go(5)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       STEP 5 — Stylist shoutout — MULTI-SELECT
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="s5">
+    <div class="s-top">
+      <span class="s-badge" id="b5">Step 5 of 6</span>
+      <div class="s-q"    id="q5">Did someone make you feel special? 💕</div>
+      <div class="s-hint" id="h5">You can tap more than one name! 💕</div>
+    </div>
+    <div class="chips" id="stylistList">
+      <button class="chip" data-v="Bimala" type="button"><span class="av">👩</span>Bimala</button>
+      <button class="chip" data-v="Vani"   type="button"><span class="av">👩</span>Vani</button>
+      <button class="chi  position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 55% 40% at 95% 5%,  rgba(212,86,122,.10) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 35% at 0%  95%,  rgba(201,146,42,.09)  0%,transparent 55%),
+    radial-gradient(ellipse 30% 25% at 50% 50%,  rgba(248,208,219,.16) 0%,transparent 60%);
+}
+/* ── shell ── */
+.shell{
+  position:relative;z-index:2;
+  height:100vh;                        /* base fallback */
+  height:calc(var(--vh,1vh)*100);      /* JS-computed: Safari <15.4 */
+  height:100dvh;                       /* modern: Chrome 108+, Safari 15.4+, Edge 105+ */
+  max-width:460px;margin:0 auto;
+  padding:0 11px;display:flex;flex-direction:column;overflow:hidden;
+}
+/* ── header ── */
+.hdr{flex-shrink:0;text-align:center;padding:5px 0 2px}
+.hdr-name{
+  font-family:'Playfair Display',serif;font-size:10px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--rose);
+  display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:1px;
+}
 .hdr-name > * + *{margin-left:7px} /* Safari <14.1 flex-gap fallback */
 .hdr-name::before,.hdr-name::after{content:'';width:24px;height:1px;background:var(--blush);display:inline-block}
 .hdr-title{
