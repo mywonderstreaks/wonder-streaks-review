@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Wonder Streaks – Share Your Experience</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --rose:#D4567A;--rose-d:#A8334F;--rose-l:#FDEEF3;--rose-ll:#FFF5F8;
+  --blush:#F8D0DB;--cream:#FFF9F5;--gold:#C9922A;--gold-l:#FFF5DC;
+  --dark:#1C0F14;--muted:#8C6070;--card:#FFFCF9;--bdr:#F0D5DF;
+  --wa:#25D366;--wa-d:#1da851;
+}
+html,body{height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;background:var(--cream)}
+body{font-family:'Poppins',sans-serif;color:var(--dark);position:relative}
+
+/* ── floating petals bg ── */
+.bg-p{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.fp{position:absolute;opacity:0;animation:rise linear infinite}
+@keyframes rise{
+  0%{transform:translateY(105vh) rotate(0deg) scale(.7);opacity:0}
+  8%{opacity:.25}85%{opacity:.15}
+  100%{transform:translateY(-8vh) rotate(380deg) scale(1.1);opacity:0}
+}
+/* ── soft bg glow ── */
+.bg-g{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 55% 40% at 95% 5%,  rgba(212,86,122,.10) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 35% at 0%  95%,  rgba(201,146,42,.09)  0%,transparent 55%),
+    radial-gradient(ellipse 30% 25% at 50% 50%,  rgba(248,208,219,.16) 0%,transparent 60%);
+}
+/* ── shell ── */
+.shell{
+  position:relative;z-index:2;
+  height:100vh;height:100dvh;max-width:460px;margin:0 auto;
+  padding:0 11px;display:flex;flex-direction:column;overflow:hidden;
+}
+/* ── header ── */
+.hdr{flex-shrink:0;text-align:center;padding:5px 0 2px}
+.hdr-name{
+  font-family:'Playfair Display',serif;font-size:10px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--rose);
+  display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:1px;
+}
+.hdr-name::before,.hdr-name::after{content:'';width:24px;height:1px;background:var(--blush);display:inline-block}
+.hdr-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1rem,4vw,1.2rem);font-weight:700;line-height:1.1;color:var(--dark);
+}
+.hdr-title em{color:var(--rose);font-style:italic}
+.hdr-sub{font-size:9.5px;color:var(--muted);margin-top:1px;font-weight:400}
+
+/* ── language bar ── */
+.lang-bar{flex-shrink:0;display:flex;gap:5px;justify-content:center;padding:3px 0 3px}
+.lb{
+  padding:2px 11px;border-radius:100px;border:1.5px solid var(--bdr);
+  background:var(--card);font-family:'Poppins',sans-serif;
+  font-size:10.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;
+}
+.lb.on{background:var(--dark);border-color:var(--dark);color:#fff}
+
+/* ── progress ── */
+.prog{flex-shrink:0;display:flex;align-items:center;padding:3px 0 4px}
+.pd{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.pd:not(:last-child)::after{
+  content:'';position:absolute;top:9px;left:calc(50% + 10px);right:calc(-50% + 10px);
+  height:2px;background:var(--blush);transition:background .3s;z-index:0;
+}
+.pd.dn:not(:last-child)::after,.pd.on:not(:last-child)::after{background:var(--gold)}
+.pd-dot{
+  width:18px;height:18px;border-radius:50%;border:2px solid var(--blush);
+  background:var(--cream);display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:700;color:var(--muted);transition:all .25s;z-index:1;
+  font-family:'Poppins',sans-serif;position:relative;flex-shrink:0;
+}
+.pd.on .pd-dot{background:var(--rose);border-color:var(--rose);color:#fff;transform:scale(1.2);box-shadow:0 0 0 3px rgba(212,86,122,.2)}
+.pd.dn .pd-dot{background:var(--gold);border-color:var(--gold);color:#fff}
+
+/* ── step card ── */
+.step{
+  display:none;flex-direction:column;flex:1;min-height:0;
+  background:var(--card);border:1.5px solid var(--bdr);border-radius:18px;
+  padding:10px 11px 8px;margin-bottom:5px;
+  animation:sIn .3s cubic-bezier(.22,1,.36,1) both;
+  overflow:hidden;position:relative;
+  box-shadow:0 6px 28px rgba(212,86,122,.08),0 1px 4px rgba(212,86,122,.04);
+}
+.step.on{display:flex}
+/* gradient top accent stripe */
+.step::before{
+  content:'';position:absolute;top:0;left:15%;right:15%;height:2.5px;
+  background:linear-gradient(90deg,transparent,var(--rose),var(--gold),var(--rose),transparent);
+  border-radius:0 0 4px 4px;opacity:.5;
+}
+/* watermark petal */
+.step::after{
+  content:'🌸';position:absolute;bottom:36px;right:9px;
+  font-size:32px;opacity:.055;pointer-events:none;transform:rotate(15deg);
+}
+@keyframes sIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+.s-top{flex-shrink:0;margin-bottom:6px}
+.s-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:linear-gradient(135deg,var(--rose),var(--rose-d));
+  color:#fff;font-size:8px;font-weight:700;letter-spacing:.07em;
+  padding:2px 9px;border-radius:100px;margin-bottom:3px;
+}
+.s-q{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(.88rem,3.2vw,1.05rem);font-weight:700;
+  line-height:1.2;color:var(--dark);margin-bottom:1px;
+}
+.s-hint{font-size:9.5px;color:var(--muted);font-weight:500}
+
+/* ── options ── */
+.opts{flex:1;display:grid;gap:5px;align-content:stretch;margin-bottom:6px;min-height:0}
+.opts.g2{grid-template-columns:1fr 1fr}
+.opts.g1{grid-template-columns:1fr}
+
+.opt{
+  background:#FFFCFA;border:1.5px solid var(--bdr);border-radius:12px;cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:2px;
+  font-family:'Poppins',sans-serif;color:var(--dark);
+  padding:5px 6px;min-height:0;position:relative;overflow:hidden;
+}
+.opt::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(212,86,122,.06),transparent);
+  opacity:0;transition:opacity .15s;pointer-events:none;
+}
+.opt:active{transform:scale(.97)}
+.opt:hover{border-color:var(--rose);box-shadow:0 3px 12px rgba(212,86,122,.14)}
+.opt:hover::after,.opt.sel::after{opacity:1}
+.opt.sel{border-color:var(--rose);background:var(--rose-l);box-shadow:0 3px 12px rgba(212,86,122,.2)}
+.opt.sel .ic{transform:scale(1.18)}
+.ic{font-size:18px;line-height:1;transition:transform .15s}
+.lb2{font-size:11px;font-weight:600;line-height:1.2;text-align:center;position:relative;z-index:1}
+
+/* selected checkmark badge */
+.opt.sel::after{opacity:1}
+.opt .chk{
+  display:none;position:absolute;top:5px;right:5px;
+  width:15px;height:15px;border-radius:50%;
+  background:var(--rose);color:#fff;font-size:9px;
+  align-items:center;justify-content:center;z-index:2;
+}
+.opt.sel .chk{display:flex}
+
+/* shake on disabled tap */
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.btn-n.shake{animation:shake .3s ease}
+
+/* ripple */
+@keyframes ripple{from{transform:scale(0);opacity:.35}to{transform:scale(3);opacity:0}}
+.ripple{position:absolute;border-radius:50%;background:rgba(212,86,122,.3);width:40px;height:40px;margin:-20px;pointer-events:none;animation:ripple .5s linear}
+
+/* emotion tiles – horizontal */
+.opts.emo .opt{flex-direction:row;gap:9px;justify-content:flex-start;padding:8px 11px}
+.opts.emo .ic{font-size:22px}
+.opts.emo .lb2{font-size:12.5px;font-weight:600;text-align:left;line-height:1.3}
+
+/* ── stylist chips ── */
+.chips{flex:1;display:flex;flex-wrap:wrap;align-content:flex-start;gap:7px;margin-bottom:6px;min-height:0;padding-top:2px}
+.chip{
+  display:flex;align-items:center;gap:6px;
+  background:#FFFCFA;border:1.5px solid var(--bdr);border-radius:100px;
+  padding:6px 14px;cursor:pointer;transition:all .15s;
+  font-family:'Poppins',sans-serif;font-size:12.5px;font-weight:600;color:var(--dark);
+}
+.chip:hover{border-color:var(--rose);background:var(--rose-ll)}
+.chip.sel{border-color:var(--rose);background:var(--rose-l);color:var(--rose-d)}
+.chip .av{
+  width:25px;height:25px;border-radius:50%;background:var(--blush);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;transition:background .15s;
+}
+.chip.sel .av{background:var(--rose);color:#fff}
+.skip-line{font-size:9.5px;color:var(--muted);flex-shrink:0;margin-top:2px;font-style:italic}
+
+/* ── nav ── */
+.nav{flex-shrink:0;display:flex;gap:7px;align-items:center;margin-top:auto}
+.btn-n{
+  flex:1;background:linear-gradient(135deg,var(--rose),var(--rose-d));
+  color:#fff;border:none;border-radius:11px;padding:10px 14px;
+  font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.btn-n:hover:not(:disabled){box-shadow:0 5px 20px rgba(212,86,122,.38);transform:translateY(-1px)}
+.btn-n:active:not(:disabled){transform:scale(.98)}
+.btn-n:disabled{opacity:.38;cursor:not-allowed;background:linear-gradient(135deg,#c9879e,#a05068)}
+.btn-b{
+  background:none;border:1.5px solid var(--bdr);border-radius:11px;
+  padding:10px 13px;cursor:pointer;color:var(--muted);font-size:11px;font-weight:600;
+  transition:all .15s;display:flex;align-items:center;gap:3px;white-space:nowrap;
+}
+.btn-b:hover{border-color:var(--rose);color:var(--rose)}
+
+/* ── review output ── */
+#sr{overflow-y:auto}
+#sr .rev-box{
+  flex:1;overflow-y:auto;
+  background:linear-gradient(155deg,var(--rose-ll) 0%,#FFFCF9 60%);
+  border:1.5px solid var(--blush);border-radius:14px;
+  padding:14px 13px 12px 16px;margin-bottom:7px;position:relative;min-height:0;
+}
+#sr .rev-box::before{
+  content:'\201C';position:absolute;top:-4px;left:10px;
+  font-family:'Playfair Display',serif;font-size:64px;
+  color:var(--blush);line-height:1;pointer-events:none;
+}
+#sr .rev-txt{font-size:13px;line-height:1.8;color:var(--dark);position:relative;z-index:1;font-weight:400}
+
+.tip-row{
+  flex-shrink:0;font-size:10px;color:var(--muted);
+  background:var(--gold-l);border:1px solid #F0DBA0;border-radius:10px;
+  padding:5px 10px;margin-bottom:5px;display:flex;gap:6px;line-height:1.5;
+}
+
+/* pulsing post button */
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(212,86,122,.45)}
+  60%{box-shadow:0 0 0 9px rgba(212,86,122,0)}
+}
+
+.abtns{flex-shrink:0;display:flex;flex-direction:column;gap:5px}
+.abtn{
+  width:100%;border:none;border-radius:11px;padding:10px;
+  font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;
+}
+.abtn-copy{background:var(--dark);color:#fff}
+.abtn-copy:hover{background:var(--rose)}
+.abtn-copy.ok{background:#1a7a3a}
+.abtn-gmap{
+  background:linear-gradient(135deg,var(--rose),var(--rose-d));color:#fff;
+  animation:pulse 2s infinite;
+}
+.abtn-gmap:hover{opacity:.92;transform:translateY(-1px)}
+
+.nudge-row{
+  flex-shrink:0;text-align:center;
+  font-size:10.5px;color:var(--muted);
+  padding:2px 0;
+}
+.abtn-wa{background:var(--wa);color:#fff;font-size:13px;padding:10px}
+.abtn-wa:hover{background:var(--wa-d)}
+.abtn-restart{background:none;color:var(--muted);font-size:11.5px;padding:4px;border:none;text-decoration:underline;text-underline-offset:2px;text-decoration-color:var(--blush)}
+.abtn-restart:hover{color:var(--rose);cursor:pointer}
+
+/* ── photo step ── */
+.photo-opt{min-height:60px}
+#photoLabel:hover{border-color:var(--rose);background:var(--blush)}
+#photoLabel:active{transform:scale(.98)}
+.seo-tip-card{
+  flex-shrink:0;background:var(--gold-l);border:1.5px solid #EDD090;
+  border-radius:12px;padding:9px 11px;display:flex;flex-direction:column;gap:4px;
+}
+.seo-tip-row{font-size:10px;color:var(--muted);font-weight:500;line-height:1.4}
+.seo-filename{
+  font-family:'Poppins',monospace;font-size:11px;font-weight:700;color:var(--gold);
+  background:#fff8e6;border:1px dashed #E0C070;border-radius:7px;
+  padding:6px 10px;cursor:pointer;word-break:break-all;line-height:1.5;
+  transition:background .15s;
+}
+.seo-filename:hover{background:#fff0c0}
+.seo-filename.copied{background:#e6ffe6;color:#1a7a3a;border-color:#90d090}
+.seo-why{font-size:9.5px;color:var(--muted);line-height:1.4;font-style:italic}
+
+/* ── review language tabs ── */
+.rev-tab{
+  flex:1;padding:6px 4px;border-radius:10px;border:1.5px solid var(--bdr);
+  background:var(--card);font-family:'Poppins',sans-serif;
+  font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;
+}
+.rev-tab.on{background:var(--rose);border-color:var(--rose);color:#fff}
+
+/* ── confetti ── */
+.cw{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden}
+.cp{position:absolute;animation:cf linear both}
+@keyframes cf{from{transform:translateY(-10px) rotate(0);opacity:1}to{transform:translateY(100vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="bg-g"></div>
+<div class="bg-p" id="petals"></div>
+<div class="cw" id="cw"></div>
+
+<div class="shell">
+
+  <!-- ── Header ── -->
+  <header class="hdr">
+    <div class="hdr-name">Wonder Streaks</div>
+    <div class="hdr-title">How was your <em>visit?</em></div>
+    <div class="hdr-sub" id="hSub">Takes 60 seconds · means a lot to us 🌸</div>
+  </header>
+
+  <!-- ── Language Toggle (A: English / Kannada / Hindi) ── -->
+  <div class="lang-bar">
+    <button class="lb on" id="lbEn" onclick="setLang('en')">English</button>
+    <button class="lb"    id="lbKn" onclick="setLang('kn')">ಕನ್ನಡ</button>
+    <button class="lb"    id="lbHi" onclick="setLang('hi')">हिंदी</button>
+  </div>
+
+  <!-- Progress dots -->
+  <div class="prog" id="pb"></div>
+
+  <!-- ════════════════════════════════════════════════════
+       STEP 1 — Service (kept as-is per instructions)
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="s1">
+    <div class="s-top">
+      <span class="s-badge" id="b1">Step 1 of 6</span>
+      <div class="s-q"    id="q1">What did you get done today?</div>
+      <div class="s-hint" id="h1">You can pick more than one ✨</div>
+    </div>
+    <div class="opts g2" id="services">
+      <button class="opt" data-v="waxing and threading">          <span class="chk">✓</span><span class="ic">🌸</span><span class="lb2" id="sv1">Waxing &amp; Threading</span></button>
+      <button class="opt" data-v="facial and skin care">          <span class="chk">✓</span><span class="ic">🧖‍♀️</span><span class="lb2" id="sv2">Facial &amp; Skin Care</span></button>
+      <button class="opt" data-v="haircut and styling">           <span class="chk">✓</span><span class="ic">✂️</span><span class="lb2" id="sv3">Hair Cut &amp; Styling</span></button>
+      <button class="opt" data-v="hair colour and highlights">    <span class="chk">✓</span><span class="ic">🎨</span><span class="lb2" id="sv4">Colour &amp; Highlights</span></button>
+      <button class="opt" data-v="hair smoothening and hair spa"> <span class="chk">✓</span><span class="ic">💆‍♀️</span><span class="lb2" id="sv5">Smoothening / Hair Spa</span></button>
+      <button class="opt" data-v="nail art and pedicure manicure"><span class="chk">✓</span><span class="ic">💅</span><span class="lb2" id="sv6">Pedicure &amp; Manicure</span></button>
+      <button class="opt" data-v="bridal and party makeup">       <span class="chk">✓</span><span class="ic">💄</span><span class="lb2" id="sv7">Bridal / Party Makeup</span></button>
+      <button class="opt" data-v="mehendi">                       <span class="chk">✓</span><span class="ic">🪷</span><span class="lb2" id="sv8">Mehendi</span></button>
+    </div>
+    <div class="nav">
+      <button class="btn-n" id="n1" onclick="go(2)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       STEP 2 — Emotion (B: new step — how do you feel)
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="s2">
+    <div class="s-top">
+      <span class="s-badge" id="b2">Step 2 of 6</span>
+      <div class="s-q"    id="q2">How are you feeling right now?</div>
+      <div class="s-hint" id="h2">Be honest — we love to know! 💕</div>
+    </div>
+    <div class="opts g1 emo" id="feelings">
+      <button class="opt" data-v="wow">  <span class="ic">😍</span><span class="lb2" id="f1">I look amazing! Totally loving it</span></button>
+      <button class="opt" data-v="happy"><span class="ic">😊</span><span class="lb2" id="f2">Really happy with how it turned out</span></button>
+      <button class="opt" data-v="fresh"><span class="ic">🥰</span><span class="lb2" id="f3">Feeling so fresh and pampered</span></button>
+      <button class="opt" data-v="exact"><span class="ic">👌</span><span class="lb2" id="f4">Got exactly what I wanted</span></button>
+    </div>
+    <div class="nav">
+      <button class="btn-b" onclick="go(1)">← Back</button>
+      <button class="btn-n" id="n2" onclick="go(3)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       STEP 3 — Staff (C: simple language)
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="s3">
+    <div class="s-top">
+      <span class="s-badge" id="b3">Step 3 of 6</span>
+      <div class="s-q"    id="q3">How was the staff?</div>
+      <div class="s-hint" id="h3">Pick one that fits best</div>
+    </div>
+    <div class="opts g1" id="expertise">
+      <button class="opt" data-v="skilled">  <span class="ic">🏆</span><span class="lb2" id="e1">They really know what they're doing</span></button>
+      <button class="opt" data-v="attentive"><span class="ic">🤝</span><span class="lb2" id="e2">Very friendly, listened to me well</span></button>
+      <button class="opt" data-v="helpful">  <span class="ic">💡</span><span class="lb2" id="e3">Gave really good tips and advice</span></button>
+      <button class="opt" data-v="careful">  <span class="ic">🔍</span><span class="lb2" id="e4">Very careful, took their time</span></button>
+    </div>
+    <div class="nav">
+      <button class="btn-b" onclick="go(2)">← Back</button>
+      <button class="btn-n" id="n3" onclick="go(4)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       STEP 4 — Salon vibe
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="s4">
+    <div class="s-top">
+      <span class="s-badge" id="b4">Step 4 of 6</span>
+      <div class="s-q"    id="q4">What did you like about the salon?</div>
+      <div class="s-hint" id="h4">Pick one</div>
+    </div>
+    <div class="opts g2" id="ambience">
+      <button class="opt" data-v="clean">    <span class="ic">✨</span><span class="lb2" id="a1">Very clean &amp; hygienic</span></button>
+      <button class="opt" data-v="relaxing"> <span class="ic">🛋️</span><span class="lb2" id="a2">Relaxing &amp; comfortable</span></button>
+      <button class="opt" data-v="products"> <span class="ic">🧴</span><span class="lb2" id="a3">Good quality products</span></button>
+      <button class="opt" data-v="interiors"><span class="ic">🌷</span><span class="lb2" id="a4">Nice &amp; well-maintained</span></button>
+    </div>
+    <div class="nav">
+      <button class="btn-b" onclick="go(3)">← Back</button>
+      <button class="btn-n" id="n4" onclick="go(5)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       STEP 5 — Stylist shoutout — MULTI-SELECT
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="s5">
+    <div class="s-top">
+      <span class="s-badge" id="b5">Step 5 of 6</span>
+      <div class="s-q"    id="q5">Did someone make you feel special? 💕</div>
+      <div class="s-hint" id="h5">You can tap more than one name! 💕</div>
+    </div>
+    <div class="chips" id="stylistList">
+      <div class="chip" data-v="Bimala"><span class="av">👩</span>Bimala</div>
+      <div class="chip" data-v="Vani">  <span class="av">👩</span>Vani</div>
+      <div class="chip" data-v="Nandu"> <span class="av">👩</span>Nandu</div>
+    </div>
+    <p class="skip-line" id="skipLine">Not sure? No worries — just skip 😊</p>
+    <div class="nav" style="margin-top:10px">
+      <button class="btn-b" onclick="go(4)">← Back</button>
+      <button class="btn-n" onclick="go(6)"><span id="nxt5Txt">Next →</span></button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       STEP 6 — Photo for Google Review (simplified)
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="s6">
+    <div class="s-top">
+      <span class="s-badge" id="b6">Step 6 of 6</span>
+      <div class="s-q"    id="q6">Add a photo to your review 📸</div>
+      <div class="s-hint" id="h6">Reviews with photos get 3× more views on Google!</div>
+    </div>
+
+    <!-- No-photo state -->
+    <div id="noPhotoYet" style="flex:1;display:flex;flex-direction:column;gap:10px;min-height:0;justify-content:center">
+
+      <!-- Single big camera button -->
+      <label for="camPhoto" style="
+        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+        border:2px dashed var(--blush);border-radius:20px;background:var(--rose-ll);
+        cursor:pointer;transition:all .18s;padding:22px 16px;text-align:center;flex:1;
+      " id="photoLabel">
+        <span style="font-size:44px">📷</span>
+        <span id="po1" style="font-size:13px;font-weight:700;color:var(--rose-d);line-height:1.4">Take or choose a photo<br><span style="font-weight:400;color:var(--muted);font-size:11px">Selfie · Salon · Your new look</span></span>
+      </label>
+      <input type="file" id="camPhoto" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+
+      <!-- Why it helps -->
+      <div style="background:var(--gold-l);border:1px solid #EDD090;border-radius:12px;padding:9px 13px;font-size:10.5px;color:var(--muted);line-height:1.6;flex-shrink:0">
+        💡 <strong style="color:var(--dark)">Why add a photo?</strong> Google shows photo reviews to more people searching for salons nearby. Just snap and upload — it takes 10 seconds!
+      </div>
+    </div>
+
+    <!-- Preview area (shown after photo selected) -->
+    <div id="photoPreview" style="display:none;flex:1;flex-direction:column;gap:8px;min-height:0">
+      <div style="flex:1;min-height:0;border-radius:16px;overflow:hidden;border:2px solid var(--blush);position:relative">
+        <img id="prevImg" style="width:100%;height:100%;object-fit:cover;display:block" alt="Wonder Streaks salon Marathahalli Bangalore">
+        <div style="position:absolute;top:8px;right:8px;background:rgba(28,15,20,.6);border-radius:20px;padding:4px 10px;color:#fff;font-size:10px;font-weight:600">
+          ✅ Photo ready
+        </div>
+      </div>
+      <div style="background:var(--gold-l);border:1px solid #EDD090;border-radius:11px;padding:8px 12px;font-size:10.5px;color:var(--muted);line-height:1.5;flex-shrink:0">
+        👆 After your review opens in Google, tap <strong style="color:var(--dark)">"Add photo"</strong> and pick this photo from your gallery.
+      </div>
+      <button class="abtn" style="background:var(--rose-l);color:var(--rose-d);font-size:12px;padding:7px;flex-shrink:0;border-radius:10px" onclick="retakePhoto()">🔄 <span id="retakeTxt">Choose a different photo</span></button>
+    </div>
+
+    <div class="nav" style="margin-top:8px;flex-shrink:0">
+      <button class="btn-b" onclick="go(5)">← Back</button>
+      <button class="btn-n" onclick="gen()">✨ <span id="getRevTxt">Get My Review</span></button>
+    </div>
+    <button class="abtn-restart" id="skipPhotoBtn" onclick="gen()" style="text-align:center;width:100%;margin-top:4px;padding:6px;flex-shrink:0">
+      <span id="skipPhotoTxt">Skip photo — just post review</span>
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       REVIEW OUTPUT — 3 languages
+  ═════════════════════════════════════════════════════ -->
+  <div class="step" id="sr">
+    <div class="s-top" style="margin-bottom:4px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+      <div>
+        <span class="s-badge" style="background:linear-gradient(135deg,var(--gold),#9a6a10)" id="doneLabel">Done! 🎉</span>
+        <div class="s-q" id="readyQ">Your review is ready!</div>
+      </div>
+      <!-- Regenerate button -->
+      <button onclick="regen()" id="regenBtn" title="Try a different review" style="
+        flex-shrink:0;margin-top:2px;background:var(--rose-ll);border:1.5px solid var(--blush);
+        border-radius:10px;padding:6px 10px;cursor:pointer;font-size:11px;font-weight:600;
+        color:var(--rose-d);font-family:'Poppins',sans-serif;display:flex;align-items:center;gap:4px;
+        transition:all .15s;white-space:nowrap;
+      ">🔀 <span id="regenTxt">Try another</span></button>
+    </div>
+
+    <!-- tip row -->
+    <div class="tip-row" style="margin-bottom:5px">💡 <span id="tipTxt">Pick a language · tweak a word if you like · then tap Post!</span></div>
+
+    <!-- Language tabs for reviews -->
+    <div style="display:flex;gap:5px;flex-shrink:0;margin-bottom:6px">
+      <button class="rev-tab on" id="rtEn" onclick="switchRevTab('en')">🇬🇧 English</button>
+      <button class="rev-tab"    id="rtKn" onclick="switchRevTab('kn')">ಕನ್ನಡ</button>
+      <button class="rev-tab"    id="rtHi" onclick="switchRevTab('hi')">हिंदी</button>
+    </div>
+
+    <!-- Review text boxes — one per language -->
+    <div class="rev-box" id="revBoxEn" style="flex:1"><div class="rev-txt" id="outTxtEn"></div></div>
+    <div class="rev-box" id="revBoxKn" style="display:none;flex:1"><div class="rev-txt" id="outTxtKn"></div></div>
+    <div class="rev-box" id="revBoxHi" style="display:none;flex:1"><div class="rev-txt" id="outTxtHi"></div></div>
+
+    <!-- action buttons -->
+    <div class="abtns">
+      <!-- PRIMARY: copies review then opens Google -->
+      <a class="abtn abtn-gmap" id="gmapBtn" href="https://maps.app.goo.gl/1CwwrN9v3ijqsoQ17" target="_blank" rel="noopener" onclick="autoCopyAndPost(event)">
+        <svg width="15" height="15" viewBox="0 0 48 48"><path fill="currentColor" d="M43.6 20H24v8h11.3C33.6 33 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z"/></svg>
+        <span id="gmapTxt">📋 Copy &amp; Post on Google</span>
+      </a>
+      <!-- copied confirmation pill (hidden by default) -->
+      <div id="copiedPill" style="display:none;text-align:center;font-size:11px;font-weight:600;color:#1a7a3a;background:#e6ffe6;border:1px solid #90d090;border-radius:8px;padding:5px 10px">
+        ✅ <span id="copiedPillTxt">Review copied! Now paste it into Google Reviews 👆</span>
+      </div>
+      <div class="nudge-row" id="nudgeTxt">Know someone who'd love Wonder Streaks? Share with her! 👇</div>
+      <button class="abtn abtn-wa" onclick="shareWA()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.121 1.535 5.853L.057 23.428a.75.75 0 00.916.916l5.635-1.476A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.71 9.71 0 01-4.952-1.355l-.355-.212-3.683.965.983-3.595-.232-.371A9.718 9.718 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+        <span id="waTxt">Share with a Friend on WhatsApp</span>
+      </button>
+      <button class="abtn abtn-restart" id="restartBtn" onclick="restart()">↩ Start Over</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const TOTAL=6;
+let LANG='en';
+let A={services:[],feeling:'',expertise:'',ambience:'',stylists:[]};
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TRANSLATIONS  (A: English / Kannada / Hindi)
+// ══════════════════════════════════════════════════════════════════════════════
+const T={
+  en:{
+    sub:'Takes 60 seconds · means a lot to us 🌸',
+    badge:i=>'Step '+i+' of 6',
+    q1:'What did you get done today?',       h1:'You can pick more than one ✨',
+    q2:'How are you feeling right now?',     h2:'Be honest — we love to know! 💕',
+    q3:'How was the staff?',                 h3:'Pick one that fits best',
+    q4:'What did you like about the salon?', h4:'Pick one',
+    q5:'Did someone make you feel special? 💕', h5:"You can tap more than one name! 💕",
+    q6:'Add a photo to your review 📸',      h6:'Reviews with photos get 3x more views on Google!',
+    sv:['Waxing & Threading','Facial & Skin Care','Hair Cut & Styling','Colour & Highlights','Smoothening / Hair Spa','Pedicure & Manicure','Bridal / Party Makeup','Mehendi'],
+    fl:['I look amazing! Totally loving it','Really happy with how it turned out','Feeling so fresh and pampered','Got exactly what I wanted'],
+    ex:["They really know what they're doing",'Very friendly, listened to me well','Gave really good tips and advice','Very careful, took their time'],
+    am:['Very clean & hygienic','Relaxing & comfortable','Good quality products','Nice & well-maintained'],
+    skip:'Not sure? No worries — just skip 😊',
+    skipPhoto:'Skip photo — just post review',
+    gen:'✨ Get My Review',
+    done:'Done! 🎉',ready:'Your review is ready!',
+    tip:'Pick a language · tweak a word if you like · then tap Post!',
+    copy:'Copy Review',copied:'Copied!',
+    gmap:'📋 Copy & Post on Google',
+    regen:'🔀 Try another',
+    copiedPill:'Review copied! Paste it into Google Reviews 👆',
+    nudge:"Know someone who'd love Wonder Streaks? Share with her! 👇",
+    wa:'Share with a Friend on WhatsApp',
+    restart:'↩ Start Over',nxt:'Next →',
+    retake:'🔄 Choose different photo',po1:'Selfie with your new look!',po2:'Photo of the salon',svcJoin:' and ',
+    photoTip:'Tap here to take a photo or choose from gallery',
+    photoSeoHint:'After taking the photo, rename it to this before uploading to Google:',
+    photoFilename:'wonder-streaks-salon-marathahalli-bangalore.jpg',
+    photoWhy:'A descriptive filename helps Google show your photo to more people searching nearby!',
+  },
+  kn:{
+    sub:'60 seconds ಆಗ್ತದೆ · ನಮಗೆ ತುಂಬಾ ಖುಷಿ ಆಗ್ತದೆ 🌸',
+    badge:i=>'ಹಂತ '+i+' / 6',
+    q1:'ಇವತ್ತು ಯಾವ service ತೆಗೆದುಕೊಂಡ್ರಿ?', h1:'ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚು ಆರಿಸಬಹುದು ✨',
+    q2:'ಈಗ ಹೇಗೆ feel ಆಗ್ತಿದೆ?',              h2:'ಹೇಳಿ, ನಾವು ತಿಳ್ಕೊಳ್ಳಲು ಇಷ್ಟ! 💕',
+    q3:'Staff ಹೇಗಿದ್ರು?',                    h3:'ಒಂದು ಆರಿಸಿ',
+    q4:'Salon ಬಗ್ಗೆ ಏನು ಇಷ್ಟ ಆಯ್ತು?',        h4:'ಒಂದು ಆರಿಸಿ',
+    q5:'ಯಾರಾದರೂ special feel ಕೊಟ್ರಾ? 💕',   h5:'ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚು ಹೆಸರು tap ಮಾಡಬಹುದು! 💕',
+    q6:'Review ಜೊತೆ photo ಹಾಕಿ 📸',          h6:'Photo ಇರುವ reviews ಗೆ Google ನಲ್ಲಿ 3x ಹೆಚ್ಚು views!',
+    sv:['Waxing & Threading','Facial & Skin Care','Hair Cut & Styling','Colour & Highlights','Smoothening / Hair Spa','Pedicure & Manicure','Bridal / Party Makeup','Mehendi'],
+    fl:['ತುಂಬಾ ಚೆನ್ನಾಗಿ ಕಾಣ್ತಿದ್ದೀನಿ! ತುಂಬಾ ಖುಷಿ','Result ನೋಡಿ ತುಂಬಾ ಸಂತೋಷ ಆಯ್ತು','Fresh ಆಗಿ pampered feel ಆಗ್ತಿದೆ','ಬೇಕಾದ್ದು exactly ಆಯ್ತು'],
+    ex:['ಅವರಿಗೆ ಕೆಲಸ ತುಂಬಾ ಚೆನ್ನಾಗಿ ಗೊತ್ತು','ತುಂಬಾ friendly, ನಾನು ಹೇಳಿದ್ದನ್ನು ಕೇಳಿದ್ರು','ಒಳ್ಳೆ suggestions ಕೊಟ್ರು','ತಾಳ್ಮೆಯಿಂದ, careful ಆಗಿ ಮಾಡಿದ್ರು'],
+    am:['ತುಂಬಾ clean & hygienic','Relaxing & comfortable ಆಗಿದೆ','ಒಳ್ಳೆ quality products','ಚೆನ್ನಾಗಿ maintain ಮಾಡಿದ ಜಾಗ'],
+    skip:'ಗೊತ್ತಿಲ್ಲವೇ? ಪರವಾಗಿಲ್ಲ — skip ಮಾಡಿ 😊',
+    skipPhoto:'Photo skip ಮಾಡಿ — review post ಮಾಡಿ',
+    gen:'✨ Review ತಯಾರು ಮಾಡಿ',
+    done:'ಆಯ್ತು! 🎉',ready:'ನಿಮ್ಮ review ready!',
+    tip:'Nimeega ishtavada language choose madi · oru word badlisi · naantara Post madi!',
+    copy:'Review Copy ಮಾಡಿ',copied:'Copy ಆಯ್ತು!',
+    gmap:'📋 Copy ಮಾಡಿ & Google ನಲ್ಲಿ Post ಮಾಡಿ',
+    regen:'🔀 Bere review try madi',
+    copiedPill:'Review copy aaythu! Google Reviews alli paste madi 👆',
+    nudge:'ಗೆಳತಿಯರಿಗೆ Wonder Streaks ಬಗ್ಗೆ ಹೇಳಿ! 👇',
+    wa:'WhatsApp ನಲ್ಲಿ Share ಮಾಡಿ',
+    restart:'↩ ಮತ್ತೆ ಶುರು ಮಾಡಿ',nxt:'ಮುಂದೆ →',
+    retake:'🔄 ಬೇರೆ photo ಆರಿಸಿ',po1:'ನಿಮ್ಮ new look selfie!',po2:'Salon photo',svcJoin:' ಮತ್ತು ',
+    photoTip:'Photo ತೆಗೆಯಲು ಅಥವಾ gallery ನಿಂದ ಆರಿಸಲು ಇಲ್ಲಿ tap ಮಾಡಿ',
+    photoSeoHint:'Photo ತೆಗೆದ ಮೇಲೆ Google ಗೆ upload ಮಾಡುವ ಮೊದಲು ಈ ಹೆಸರು ಕೊಡಿ:',
+    photoFilename:'wonder-streaks-salon-marathahalli-bangalore.jpg',
+    photoWhy:'Descriptive filename ಇದ್ದರೆ Google ನಲ್ಲಿ ಹೆಚ್ಚು ಜನರಿಗೆ ತೋರಿಸ್ತದೆ!',
+  },
+  hi:{
+    sub:'60 seconds lagenge · hamein bahut khushi hogi 🌸',
+    badge:i=>'Step '+i+' / 6',
+    q1:'Aaj kya karwaya?',                   h1:'Ek se zyada bhi choose kar sakti hain ✨',
+    q2:'Abhi kaisa feel ho raha hai?',       h2:'Sach batao, hume sunna achha lagta hai! 💕',
+    q3:'Staff kaisi thi?',                   h3:'Jo sahi lage wo choose karo',
+    q4:'Salon mein kya achha laga?',         h4:'Ek choose karo',
+    q5:'Kisi ne special feel karaya? 💕',    h5:'Ek se zyada naam bhi tap kar sakti ho! 💕',
+    q6:'Review ke saath photo lagao 📸',     h6:'Photo wale reviews ko Google 3x zyada dikhata hai!',
+    sv:['Waxing & Threading','Facial & Skin Care','Hair Cut & Styling','Colour & Highlights','Smoothening / Hair Spa','Pedicure & Manicure','Bridal / Party Makeup','Mehendi'],
+    fl:['Bahut achhi lag rahi hoon! Dil khush ho gaya','Result dekh ke bahut khushi hui','Bilkul fresh aur pampered feel ho raha hai','Exactly jo chahiye tha, wahi mila'],
+    ex:['Kaam bahut achha aata hai inhe','Bahut friendly, meri baat suni','Bahut achhe suggestions diye','Dhyan se, time lekar kiya'],
+    am:['Bahut clean & hygienic','Relaxing & comfortable','Achhe quality ke products','Sundar aur well-maintained'],
+    skip:'Yaad nahi? Koi baat nahi — skip karo 😊',
+    skipPhoto:'Photo skip karo — bas review post karo',
+    gen:'✨ Meri Review Banao',
+    done:'Ho gaya! 🎉',ready:'Teri review ready hai!',
+    tip:'Koi bhi language chuno · ek word badlo chahe · phir Post karo!',
+    copy:'Review Copy Karo',copied:'Copy ho gaya!',
+    gmap:'📋 Copy karo & Google par Post karo',
+    regen:'🔀 Alag review try karo',
+    copiedPill:'Review copy ho gayi! Google Reviews mein paste karo 👆',
+    nudge:'Koi saheli Wonder Streaks try karna chahegi? Share karo! 👇',
+    wa:'WhatsApp par Saheli ko Share Karo',
+    restart:'↩ Phir se shuru karo',nxt:'Aage →',
+    retake:'🔄 Alag photo chuno',po1:'Apna new look selfie!',po2:'Salon ki photo',svcJoin:' aur ',
+    photoTip:'Photo lene ke liye ya gallery se chunne ke liye yahan tap karo',
+    photoSeoHint:'Photo lene ke baad Google pe upload karne se pehle yeh naam do:',
+    photoFilename:'wonder-streaks-salon-marathahalli-bangalore.jpg',
+    photoWhy:'Sahi naam se Google zyada logon ko ye photo dikhata hai!',
+  },
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+// REVIEW TEMPLATES — genuine Indian English / Kannada / Hindi
+// (B: emotion-first, C: simple language, G: SEO keywords embedded)
+// ══════════════════════════════════════════════════════════════════════════════
+const R={
+  en:{
+    feeling:{
+      wow:[
+        "Oh my God, I am absolutely loving how I look right now! Cannot stop looking in the mirror 😍",
+        "I walked out of Wonder Streaks feeling like a totally different person — in the best way!",
+        "Honestly didn't expect it to turn out this well. I look so good, very happy!",
+        "Can't stop smiling! Such a great job — totally worth it 😍",
+      ],
+      happy:[
+        "Really happy with how everything turned out — totally worth the visit.",
+        "Very pleased with the result! Came out exactly how I hoped.",
+        "Happy customer here! The result was really good and I left with a big smile.",
+        "Glad I came in today. Really happy with the outcome — well done!",
+      ],
+      fresh:[
+        "Feeling so fresh and relaxed after my visit — just what I needed!",
+        "Left the salon feeling completely pampered. Such a lovely experience.",
+        "That feeling when you step out of a salon fresh ✨ — Wonder Streaks gave me exactly that!",
+        "Just feel so good after the session. Like a proper me-time break 😊",
+      ],
+      exact:[
+        "They did exactly what I asked for — no more, no less. Love that!",
+        "Finally a salon that actually listens! Got exactly what I wanted.",
+        "Came in with a clear picture in mind and they nailed it perfectly.",
+        "Zero compromise — they got it spot on. Really impressed!",
+      ],
+    },
+    intro:s=>[
+      "I recently visited Wonder Streaks in Marathahalli for "+s+" and I must say, it was a really good experience.",
+      "Just got "+s+" done at Wonder Streaks ladies salon in Marathahalli, Bangalore — and I loved it!",
+      "Went to Wonder Streaks in Marathahalli for "+s+". Honestly one of the better salon visits I've had in Bangalore.",
+      "Visited Wonder Streaks, Marathahalli for "+s+" — so glad I chose this place!",
+    ],
+    staff:{
+      skilled:[
+        "The staff there are really good at their work — you can see it in the results.",
+        "The didi who did my service knew exactly what she was doing. Very experienced.",
+        "The stylist handled everything so confidently. Clearly knows her craft well.",
+        "Really impressed by how skilled the team is — they know what they are doing.",
+      ],
+      attentive:[
+        "The staff was very sweet and listened to exactly what I wanted — no unnecessary suggestions.",
+        "Very friendly team. They made me feel comfortable and didn't rush me at all.",
+        "They paid attention to every small thing I mentioned. That's rare in a salon!",
+        "Warm, patient team — they made sure I was happy at every single step.",
+      ],
+      helpful:[
+        "The stylist gave me really useful suggestions — and she was right! Turned out great.",
+        "They advised me honestly on what would suit me — didn't just agree with everything.",
+        "Got some really helpful tips from the team that I hadn't even thought of.",
+        "Staff guided me so well, especially since I wasn't fully sure what I wanted.",
+      ],
+      careful:[
+        "They took their time and didn't rush at all. Every step was done so carefully.",
+        "Very thorough and patient. Made sure everything looked perfect before I left.",
+        "The attention to detail was really good — they didn't cut corners anywhere.",
+        "Slow and careful — they did it properly and the result really shows it.",
+      ],
+    },
+    stylist:{
+      pre:["A special shoutout to","Big thanks to","Really want to mention","Huge credit goes to"],
+      post:["— she was absolutely brilliant!","— such a great job, thank you so much!","— so sweet and talented, she made my day! 💕","— she took such good care of me, loved it!"],
+    },
+    ambience:{
+      clean:[
+        "The salon is very clean and hygienic — felt completely comfortable throughout.",
+        "Much cleaner than most salons I've visited. They really maintain the place well.",
+        "Neat, tidy and hygienic — exactly what you want in a salon.",
+        "The cleanliness was really good — no issues at all, felt totally at ease.",
+      ],
+      relaxing:[
+        "The vibe inside is very calm and relaxing — I actually enjoyed sitting there!",
+        "Comfortable space, not noisy or overwhelming. Just a pleasant place to be.",
+        "Felt very much at ease the whole time — like a proper me-time break.",
+        "The atmosphere is so welcoming. Good place to sit back and get pampered.",
+      ],
+      products:[
+        "They use good quality products — you can really feel the difference.",
+        "No harsh smell or irritation at all. The products they use are clearly good.",
+        "The products used were top notch — my hair / skin felt great afterwards.",
+        "You can tell they don't compromise on the products they use.",
+      ],
+      interiors:[
+        "The salon looks really nice and is well-maintained inside.",
+        "Clean, pretty space — felt welcoming from the moment I walked in.",
+        "Nicely done interiors — comfortable and well-kept.",
+        "Everything looks neat and organised inside. A very pleasant place to be.",
+      ],
+    },
+    value:[
+      "The pricing is very reasonable for the quality you get — fully worth it!",
+      "Good value for money. Didn't feel like I overpaid for what I got.",
+      "Affordable rates and really good results — that combination is hard to find!",
+      "The price is fair and the quality is solid. Will definitely be coming back.",
+    ],
+    close:[
+      "Highly recommend Wonder Streaks to anyone in Marathahalli, Whitefield, Bellandur or Brookefield looking for a good ladies salon. Will definitely be back! 💕",
+      "If you're in Marathahalli, Bangalore and looking for a reliable women's salon — Wonder Streaks is the place. Definitely go! 🌸",
+      "Already told a few friends about this place. Wonder Streaks in Marathahalli is a must-visit for ladies in Bangalore! ✨",
+      "100% will return. One of the best ladies salons I've been to in Marathahalli, Bangalore. Highly recommend! 💕",
+    ],
+  },
+
+  kn:{
+    feeling:{
+      wow:[
+        "Ayyayyo! Nanu iddhu tumba chennagidheene antha feel aagtha idhe — super happy! 😍",
+        "Wonder Streaks ninda hodha mele bilkul different person tharahe feel aagtha idhini!",
+        "Mirror nalli nodi nodi enjoy aagtha idhini 😍 Eno superb aaythu!",
+        "Ishtond channagaagbhudhu antha expect maadilla — tumba surprised aadhe!",
+      ],
+      happy:[
+        "Result nodi tumba khushi aaythu — visit tumba worth aaythu.",
+        "Tumba satisfied! Exactly hope maadidda tharahe aaythu.",
+        "Happy customer! Result tumba chenna aagi band, smiling aagi hogidhe.",
+        "Ivattu bariddu tumba correct decision aaythu. Result channagide!",
+      ],
+      fresh:[
+        "Salon ninda bhandha mele tumba fresh aagi relaxed feel aagtha idhe — exactly idu beke aagithtu!",
+        "Tumba pampered feel aagtha idhe. Tumba nice experience aaythu.",
+        "Salon ninda hogkke fresh feeling ✨ — Wonder Streaks exactly adu kottu!",
+        "Session aadha mele tumba good feel aagtha idhe. Mini holiday tharahe honestly 😊",
+      ],
+      exact:[
+        "Naanu kelidde exactly adu maadidhu — tumba channagide!",
+        "Kelista salon sigithu! Exactly beklaadithu adu kottu.",
+        "Clear picture itta baridhe, avaru perfectly maadidhu.",
+        "Naanu bekenaddu exact aagi aaythu — really impressive!",
+      ],
+    },
+    intro:s=>[
+      "Nanu ivattu Wonder Streaks, Marathahalli ge "+s+" gagi hogidde — tumba channagina experience aaythu.",
+      "Wonder Streaks ladies salon, Marathahalli alli "+s+" maadiskollde — tumba channagide!",
+      "Marathahalli Wonder Streaks ge "+s+" gagi hogidde. Bangalore alli hogidha best salon visits alli ondhu idu.",
+      "Wonder Streaks, Marathahalli ge "+s+" gagi hogidde — ee jaaga choosida khushi aaythu!",
+    ],
+    staff:{
+      skilled:[
+        "Avarigu kaaj tumba channagide — result nalli gotha aagtha idhe.",
+        "Naana kaaj maadida didi tumba expert — clearly avatigu gothhu.",
+        "Stylist tumba confident aagi maadidhu. Kaaj bahala channagide.",
+        "Team tumba skilled antha impress aaythu — kaaj clearly gothhu avarigu.",
+      ],
+      attentive:[
+        "Staff tumba sweet aagi naanu heldha exactly adu maadidhu — unnecessary suggestions illa.",
+        "Tumba friendly team. Comfortable feel maadidhu, rush maadalla.",
+        "Naanu helida chinna details ellaanu attention kottu kaalidhu — idu rare!",
+        "Warm, patient aagi prateyondhu step alli naanu happy iddheenaa antha nodidhu.",
+      ],
+      helpful:[
+        "Stylist tumba useful suggestions kottu — and she was right! Channagaaythu.",
+        "Naanu bekenaddu honestly advice kottu — agree maadkolalla illa.",
+        "Team tumba helpful tips kottu, naanu think maadidde illa aadavugalannu.",
+        "Staff tumba well guide maadidhu — naanu fully sure illa idde aaglu.",
+      ],
+      careful:[
+        "Time tegedukondu, rush maadalla. Prateyondu step carefully maadidhu.",
+        "Thorough aagi patient aagi, hogoke munche perfect aagide antha nodidhu.",
+        "Detail ge tumba attention kottu — kaaj swalpa kuda suri maadilla.",
+        "Properly maadidhu — result nalli clearly gothagthe.",
+      ],
+    },
+    stylist:{
+      pre:["Visheshaavagi thanks heeltini","Tumba thanks heeltini","Visheshaavagi mention maadabeku","Channagina kaajakkagi credits"],
+      post:["avarigu — tumba brilliant aagi maadidhu!","avarigu — channagina kaaj, thanks tumba! 💕","avarigu — tumba sweet aagi maadidhu, naana day make aaythu! 💕","avarigu — tumba channagina care tegedukondu, bahala khushi aaythu!"],
+    },
+    ambience:{
+      clean:[
+        "Salon tumba clean aagi hygienic aagide — full comfortable feel aaythu.",
+        "Naanu hogida salons ginta tumba better — maintain channagide.",
+        "Neat, tidy aagi hygienic — salon alli ee expect maadbuhudu idu.",
+        "Cleanliness tumba channagittu — full at ease feel aaythu.",
+      ],
+      relaxing:[
+        "Inside vibe tumba calm aagi relaxing — wait kuda enjoy maadde!",
+        "Comfortable space, noisy illa, overwhelming alla. Just pleasant.",
+        "Indha tara at ease feel aagidde — proper me-time break tharahe.",
+        "Atmosphere tumba welcoming — sit back aagi pampered aagoke good place.",
+      ],
+      products:[
+        "Channagina quality products use maadidhu — hair/skin mele feel aagtha idhe.",
+        "Harsh smell illa, irritation illa. Products clearly good quality.",
+        "Products top notch — nantara hair/skin tumba channagittu.",
+        "Products mele compromise maadalla antha gothagthe.",
+      ],
+      interiors:[
+        "Salon inside tumba channagide aagi maintain maadideere.",
+        "Clean, pretty space — hogida second ninda welcoming feel aaythu.",
+        "Interior channagide. Comfortable aagi well-kept — experience ge add aagthe.",
+        "Inside neat aagi organized aagide. Iroku pleasant jaaga.",
+      ],
+    },
+    value:[
+      "Quality ge comparison alli price tumba reasonable — fully worth!",
+      "Good value for money. Sigidha kaaj ge overpay aaythu antha feel agalla.",
+      "Affordable rates aagi really good results — ee combination sigodu tumba kashTa!",
+      "Price fair aagi quality solid — definitely wapas bartini.",
+    ],
+    close:[
+      "Marathahalli, Whitefield, Bellandur, Brookefield alli iru channagina ladies salon bekaadre Wonder Streaks ge hogi — highly recommend! 💕",
+      "Marathahalli, Bangalore alli iru reliable women's salon bekaadre — Wonder Streaks ge hogi! 🌸",
+      "Geltiyarige illi bagi hellidheene already. Wonder Streaks Marathahalli — Bangalore ladies ge must visit! ✨",
+      "Definitely wapas bartini. Marathahalli alli hogida best ladies salons alli idu ondhu. Highly recommend! 💕",
+    ],
+  },
+
+  hi:{
+    feeling:{
+      wow:[
+        "Arrey wah! Main toh mirror se hat hi nahi rahi — itna achha lag raha hai! 😍",
+        "Wonder Streaks se nikal ke ekdum alag hi feel aa raha hai — seriously amazing!",
+        "Bilkul nahi socha tha itna achha hoga — dil khush ho gaya completely!",
+        "Abhi toh bas apna hi chehra dekhte rehne ka mann kar raha hai 😍 Bahut achha kiya!",
+      ],
+      happy:[
+        "Sach mein bahut khushi hui result dekh ke — visit bilkul sahi rahi.",
+        "Bahut satisfied hoon! Jitna umeed tha, utna hi achha hua.",
+        "Happy customer! Result bahut achha raha aur main muskurate hue gayi.",
+        "Aaj aana bilkul sahi decision tha. Result se bahut khush hoon — well done!",
+      ],
+      fresh:[
+        "Salon se nikal ke ekdum fresh aur relaxed feel ho raha hai — yahi chahiye tha!",
+        "Itna pampered feel ho raha hai. Bahut hi achha experience raha.",
+        "Salon se fresh feel leke nikalti hoon ✨ — Wonder Streaks ne exactly yahi diya!",
+        "Session ke baad bahut achha lag raha hai. Mini holiday jaisa honestly 😊",
+      ],
+      exact:[
+        "Exactly jo maanga tha, wahi kiya unhone — bahut achha laga!",
+        "Aakhir ek salon mila jo sunti hai! Exactly jo chahiye tha wahi mila.",
+        "Dimag mein clear picture lekar aayi thi aur unhone perfectly kar diya.",
+        "Jo chahiye tha exactly wahi hua — really impressive!",
+      ],
+    },
+    intro:s=>[
+      "Main aaj Wonder Streaks, Marathahalli mein "+s+" ke liye gayi thi — sach mein bahut achha experience raha.",
+      "Wonder Streaks ladies salon, Marathahalli mein "+s+" karwaya — bilkul loved it!",
+      "Marathahalli Wonder Streaks mein "+s+" ke liye gayi. Bangalore mein jo salon visits hui hain unme se ye ek best rahi.",
+      "Wonder Streaks, Marathahalli mein "+s+" ke liye gayi — yahan aana sahi decision tha!",
+    ],
+    staff:{
+      skilled:[
+        "Wahan ki staff ko apna kaam bahut achha aata hai — result mein dikh jaata hai.",
+        "Mera kaam karne wali didi bahut experienced thi — clearly inhe achha kaam aata hai.",
+        "Stylist ne bahut confidently handle kiya. Clearly apne kaam mein maahir hai.",
+        "Team kitni skilled hai dekh ke impress ho gayi — sach mein kaam aata hai inhe.",
+      ],
+      attentive:[
+        "Staff bahut sweet thi aur exactly jo maanga sunti rahi — unnecessary suggestions nahi diye.",
+        "Bahut friendly team. Comfortable feel karaya, bilkul bhi rush nahi kiya.",
+        "Maine jo choti choti baat boli, sab dhyan se suni — ye bahut rare hai!",
+        "Warm, patient thi aur har step pe puchha ki main khush hoon ya nahi.",
+      ],
+      helpful:[
+        "Stylist ne bahut useful suggestions diye — aur woh sahi nikle! Bahut achha hua.",
+        "Jo achha lagega uske baare mein honestly advice di — sab se agree nahi kiya.",
+        "Team ne kuch bahut helpful tips diye jo mujhe soche bhi nahi the.",
+        "Staff ne bahut achhe se guide kiya — khaaskar tab jab main fully sure nahi thi.",
+      ],
+      careful:[
+        "Unhone time liya, bilkul rush nahi kiya. Har step carefully kiya.",
+        "Bahut thorough aur patient rahi. Jaane se pehle sab perfect hai check kiya.",
+        "Detail pe bahut dhyan diya — kahi bhi shortcut nahi liya.",
+        "Theek se kiya, properly — aur result mein sach mein dikh raha hai.",
+      ],
+    },
+    stylist:{
+      pre:["Khaas thanks dena chahti hoon","Bahut shukriya dena chahungi","Zaroor mention karna chahungi","Dil se shukriya kehna chahungi"],
+      post:["ko — bilkul brilliant kiya unhone!","ko — itna achha kaam kiya, bahut shukriya! 💕","ko — bahut sweet aur talented hain, mera din ban gaya! 💕","ko — itna achha khayal rakha mera, bahut achha laga!"],
+    },
+    ambience:{
+      clean:[
+        "Salon bahut clean aur hygienic hai — poore time comfortable feel kiya.",
+        "Aksar jo salons jaati hoon unse bahut better — jagah ko sach mein maintain kiya hai.",
+        "Neat, tidy aur hygienic — salon mein yahi chahiye hota hai.",
+        "Cleanliness bahut achhi thi — bilkul comfortable feel hua.",
+      ],
+      relaxing:[
+        "Andar ka vibe bahut calm aur relaxing hai — wait karna bhi enjoy kiya!",
+        "Comfortable jagah hai, na shor na overwhelm. Bas achha sa feel.",
+        "Poore time itna at ease feel kiya — sach mein me-time break jaisa raha.",
+        "Atmosphere bahut welcoming hai. Aram se baith ke pampered hone ki achhi jagah.",
+      ],
+      products:[
+        "Achhe quality ke products use kiye — hair/skin pe feel ho jaata hai.",
+        "Harsh smell nahi, irritation nahi. Products clearly achhe quality ke hain.",
+        "Products top notch the — baad mein hair/skin bahut achha feel hua.",
+        "Products pe compromise nahi kiya — ye baat samajh aayi.",
+      ],
+      interiors:[
+        "Salon andar se bahut achha lagta hai aur maintain kiya hua hai.",
+        "Clean, sundar jagah — andar ghuste hi welcoming feel aaya.",
+        "Interiors achhe hain. Comfortable aur well-kept — poori experience mein add karta hai.",
+        "Andar sab neat aur organized hai. Bahut achhi jagah hai rehne ke liye.",
+      ],
+    },
+    value:[
+      "Quality ke hisaab se price bahut reasonable hai — full paisa vasool!",
+      "Paise ki value mili. Jitna kaam hua usme zyada nahi laga.",
+      "Affordable rates aur really good results — ye combination milna mushkil hota hai!",
+      "Price fair hai aur quality solid — zaroor wapas aaungi.",
+    ],
+    close:[
+      "Marathahalli, Whitefield, Bellandur ya Brookefield mein hain aur achha ladies salon chahiye — Wonder Streaks zaroor try karo! 💕",
+      "Marathahalli, Bangalore mein reliable women's salon chahiye toh Wonder Streaks jao — bilkul sahi jagah hai! 🌸",
+      "Kaafi doston ko bata diya hai pehle hi. Wonder Streaks Marathahalli — Bangalore ki ladies ke liye must visit! ✨",
+      "100% wapas aungi. Marathahalli mein jo salons gayi hoon unme se ye ek best hai. Highly recommend! 💕",
+    ],
+  },
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FLOATING PETALS
+// ══════════════════════════════════════════════════════════════════════════════
+(function(){
+  const w=document.getElementById('petals');
+  const em=['🌸','🌺','✨','💕','🌷','💐','🌼','⭐'];
+  for(let i=0;i<14;i++){
+    const el=document.createElement('div');el.className='fp';
+    el.textContent=em[i%em.length];
+    el.style.cssText='left:'+Math.random()*100+'%;font-size:'+(13+Math.random()*14)+'px;animation-duration:'+(9+Math.random()*13)+'s;animation-delay:'+(Math.random()*12)+'s;';
+    w.appendChild(el);
+  }
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PROGRESS DOTS
+// ══════════════════════════════════════════════════════════════════════════════
+const pb=document.getElementById('pb');
+for(let i=1;i<=TOTAL;i++){
+  const d=document.createElement('div');d.className='pd';d.id='d'+i;
+  const dot=document.createElement('div');dot.className='pd-dot';dot.textContent=i;
+  d.appendChild(dot);pb.appendChild(d);
+}
+
+function updProg(n){
+  for(let i=1;i<=TOTAL;i++){
+    const d=document.getElementById('d'+i);
+    d.className='pd'+(i<n?' dn':i===n?' on':'');
+  }
+}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+
+// Ripple effect on tap
+function addRipple(el,e){
+  const r=document.createElement('span');r.className='ripple';
+  const rect=el.getBoundingClientRect();
+  r.style.left=(e.clientX-rect.left)+'px';r.style.top=(e.clientY-rect.top)+'px';
+  el.appendChild(r);setTimeout(()=>r.remove(),600);
+}
+
+// Shake disabled Next button when tapped while disabled
+document.querySelectorAll('.btn-n').forEach(btn=>{
+  btn.addEventListener('click',function(e){
+    if(this.disabled){
+      this.classList.remove('shake');void this.offsetWidth;
+      this.classList.add('shake');
+      setTimeout(()=>this.classList.remove('shake'),400);
+    }
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// LANGUAGE SWITCH (A)
+// ══════════════════════════════════════════════════════════════════════════════
+function setLang(l){
+  LANG=l;
+  document.getElementById('lbEn').classList.toggle('on',l==='en');
+  document.getElementById('lbKn').classList.toggle('on',l==='kn');
+  document.getElementById('lbHi').classList.toggle('on',l==='hi');
+  const t=T[l];
+  document.getElementById('hSub').textContent=t.sub;
+  for(let i=1;i<=6;i++){
+    const b=document.getElementById('b'+i);if(b)b.textContent=t.badge(i);
+    const q=document.getElementById('q'+i);if(q)q.textContent=t['q'+i];
+    const h=document.getElementById('h'+i);if(h)h.textContent=t['h'+i];
+  }
+  t.sv.forEach((s,i)=>{const el=document.getElementById('sv'+(i+1));if(el)el.textContent=s;});
+  t.fl.forEach((s,i)=>{const el=document.getElementById('f'+(i+1));if(el)el.textContent=s;});
+  t.ex.forEach((s,i)=>{const el=document.getElementById('e'+(i+1));if(el)el.textContent=s;});
+  t.am.forEach((s,i)=>{const el=document.getElementById('a'+(i+1));if(el)el.textContent=s;});
+  document.getElementById('skipLine').textContent=t.skip;
+  const n5=document.getElementById('nxt5Txt');if(n5)n5.textContent=t.nxt;
+  if(document.getElementById('retakeTxt'))document.getElementById('retakeTxt').textContent=t.retake;
+  document.getElementById('getRevTxt').textContent=t.gen;
+  document.getElementById('skipPhotoTxt').textContent=t.skipPhoto;
+  document.getElementById('doneLabel').textContent=t.done;
+  document.getElementById('readyQ').textContent=t.ready;
+  document.getElementById('tipTxt').textContent=t.tip;
+  document.getElementById('gmapTxt').textContent=t.gmap;
+  document.getElementById('nudgeTxt').textContent=t.nudge;
+  document.getElementById('waTxt').textContent=t.wa;
+  document.getElementById('restartBtn').textContent=t.restart;
+  if(document.getElementById('regenTxt'))document.getElementById('regenTxt').textContent=t.regen||'Try another';
+  if(document.getElementById('copiedPillTxt'))document.getElementById('copiedPillTxt').textContent=t.copiedPill||'Review copied! Now paste it into Google Reviews 👆';
+  ['n1','n2','n3','n4'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t.nxt;});
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════════════════════
+function go(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('on'));
+  document.getElementById(typeof n==='number'?'s'+n:n).classList.add('on');
+  if(typeof n==='number'&&n<=TOTAL)updProg(n);
+  window.scrollTo(0,0);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// STEP INTERACTIONS
+// ══════════════════════════════════════════════════════════════════════════════
+document.querySelectorAll('#services .opt').forEach(b=>{
+  b.addEventListener('click',(e)=>{
+    addRipple(b,e);
+    b.classList.toggle('sel');
+    const v=b.dataset.v;
+    if(b.classList.contains('sel'))A.services.push(v);
+    else A.services=A.services.filter(x=>x!==v);
+    document.getElementById('n1').disabled=A.services.length===0;
+  });
+});
+['feelings','expertise','ambience'].forEach((id,idx)=>{
+  document.querySelectorAll('#'+id+' .opt').forEach(b=>{
+    b.addEventListener('click',(e)=>{
+      addRipple(b,e);
+      document.querySelectorAll('#'+id+' .opt').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel');
+      if(id==='feelings')A.feeling=b.dataset.v;
+      else if(id==='expertise')A.expertise=b.dataset.v;
+      else A.ambience=b.dataset.v;
+      const nids=['n2','n3','n4'];
+      document.getElementById(nids[idx]).disabled=false;
+      // Auto-advance after brief pause so user sees their selection
+      const nextStep=[3,4,5][idx];
+      setTimeout(()=>go(nextStep),320);
+    });
+  });
+});
+document.querySelectorAll('#stylistList .chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    c.classList.toggle('sel');
+    // Build array of all selected stylist names
+    A.stylists=Array.from(document.querySelectorAll('#stylistList .chip.sel')).map(x=>x.dataset.v);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PHOTO STEP
+// ══════════════════════════════════════════════════════════════════════════════
+function handlePhoto(input){
+  if(!input.files||!input.files[0])return;
+  const file=input.files[0];
+  const url=URL.createObjectURL(file);
+  const img=document.getElementById('prevImg');
+  img.src=url;
+  img.alt='Wonder Streaks ladies salon Marathahalli Bangalore';
+  document.getElementById('noPhotoYet').style.display='none';
+  document.getElementById('photoPreview').style.display='flex';
+  window._photoFile=file;window._photoURL=url;
+}
+
+function retakePhoto(){
+  document.getElementById('photoPreview').style.display='none';
+  document.getElementById('noPhotoYet').style.display='flex';
+  document.getElementById('camPhoto').value='';
+  window._photoFile=null;window._photoURL=null;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// BUILD ONE REVIEW in a given language
+// ══════════════════════════════════════════════════════════════════════════════
+function buildReview(lang){
+  const{feeling,expertise,ambience}=A;
+  const Rv=R[lang];
+  const join=T[lang].svcJoin||' and ';
+
+  // Use stored data-v values (language-neutral) for service string per language
+  const svcKeys=A.services; // e.g. ["haircut and styling","facial and skin care"]
+  // Map each key to the translated label for this language
+  const svcLabels=svcKeys.map(v=>{
+    const idx=['waxing and threading','facial and skin care','haircut and styling','hair colour and highlights','hair smoothening and hair spa','nail art and pedicure manicure','bridal and party makeup','mehendi'].indexOf(v);
+    return idx>=0 ? T[lang].sv[idx] : v;
+  });
+  const svcStr=svcLabels.length===1?svcLabels[0]
+    :svcLabels.length===2?svcLabels[0]+join+svcLabels[1]
+    :svcLabels.slice(0,-1).join(', ')+join+svcLabels[svcLabels.length-1];
+
+  const feelLine  = pick(Rv.feeling[feeling]   || Rv.feeling.happy);
+  const introLine = pick(Rv.intro(svcStr));
+  const staffLine = pick(Rv.staff[expertise]   || Rv.staff.skilled);
+  const ambLine   = pick(Rv.ambience[ambience] || Rv.ambience.clean);
+  const valueLine = pick(Rv.value);
+  const closeLine = pick(Rv.close);
+
+  let stylistLine='';
+  if(A.stylists&&A.stylists.length>0){
+    const nameStr=A.stylists.length===1?A.stylists[0]
+      :A.stylists.length===2?A.stylists[0]+join+A.stylists[1]
+      :A.stylists.slice(0,-1).join(', ')+join+A.stylists[A.stylists.length-1];
+    stylistLine=pick(Rv.stylist.pre)+' '+nameStr+' '+pick(Rv.stylist.post);
+  }
+
+  return [feelLine,introLine,staffLine,stylistLine,ambLine,valueLine,closeLine].filter(Boolean).join(' ');
+}
+
+function gen(){
+  // Generate all 3 language reviews
+  const revEn=buildReview('en');
+  const revKn=buildReview('kn');
+  const revHi=buildReview('hi');
+
+  document.getElementById('outTxtEn').textContent=revEn;
+  document.getElementById('outTxtKn').textContent=revKn;
+  document.getElementById('outTxtHi').textContent=revHi;
+
+  // Start on current UI language tab
+  switchRevTab(LANG);
+  go('sr');
+  confetti();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// REVIEW TAB SWITCHER
+// ══════════════════════════════════════════════════════════════════════════════
+let _revLang=LANG;
+function switchRevTab(l){
+  _revLang=l;
+  ['en','kn','hi'].forEach(x=>{
+    document.getElementById('rt'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('on',x===l);
+    document.getElementById('revBox'+x.charAt(0).toUpperCase()+x.slice(1)).style.display=x===l?'flex':'none';
+  });
+  // update which review is active for copy
+  window._rev=document.getElementById('outTxt'+l.charAt(0).toUpperCase()+l.slice(1)).textContent;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// AUTO-COPY + POST ON GOOGLE
+// ══════════════════════════════════════════════════════════════════════════════
+function autoCopyAndPost(e){
+  if(!window._rev)return;
+  const pill=document.getElementById('copiedPill');
+  const doCopy=()=>{
+    pill.style.display='block';
+    setTimeout(()=>{pill.style.display='none';},5000);
+  };
+  navigator.clipboard.writeText(window._rev).then(doCopy).catch(()=>{
+    // fallback for browsers that block clipboard without user gesture
+    const ta=document.createElement('textarea');ta.value=window._rev;
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');}catch(_){}
+    document.body.removeChild(ta);doCopy();
+  });
+  // link opens naturally via href — no e.preventDefault()
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// REGENERATE — re-roll all 3 language reviews without leaving result screen
+// ══════════════════════════════════════════════════════════════════════════════
+function regen(){
+  const btn=document.getElementById('regenBtn');
+  btn.style.opacity='.5';btn.style.pointerEvents='none';
+  setTimeout(()=>{btn.style.opacity='';btn.style.pointerEvents='';},700);
+
+  const revEn=buildReview('en');
+  const revKn=buildReview('kn');
+  const revHi=buildReview('hi');
+  document.getElementById('outTxtEn').textContent=revEn;
+  document.getElementById('outTxtKn').textContent=revKn;
+  document.getElementById('outTxtHi').textContent=revHi;
+  switchRevTab(_revLang);
+
+  // small shake on review box to signal refresh
+  const box=document.querySelector('.rev-box[style*="flex:1"]:not([style*="none"])') ||
+            document.getElementById('revBoxEn');
+  box.style.transition='transform .15s';
+  box.style.transform='scale(.98)';
+  setTimeout(()=>{box.style.transform='';},200);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// WHATSAPP SHARE (F)
+// ══════════════════════════════════════════════════════════════════════════════
+function shareWA(){
+  // ⚠️ UPDATE THIS URL after hosting the file (see instructions below)
+  const toolUrl='https://wonderstreaks.github.io/review';
+  const msgs={
+    en:"Hi! 😊 I just visited Wonder Streaks ladies salon in Marathahalli, Bangalore — such a lovely experience! 💕\n\nThey have this quick tool to write your Google review in seconds — in English, Kannada or Hindi. Tap here:\n👉 "+toolUrl,
+    kn:"Hi! 😊 Wonder Streaks salon, Marathahalli nalli tumba channagina experience aaythu 💕\n\nAvru illi nodi — 60 seconds alli Google review bari, English, Kannada, Hindi alli:\n👉 "+toolUrl,
+    hi:"Hi! 😊 Wonder Streaks ladies salon, Marathahalli Bangalore mein bahut achha experience hua 💕\n\nYe tool use karo — 60 seconds mein Google review likho, English, Kannada ya Hindi mein:\n👉 "+toolUrl,
+  };
+  window.open('https://wa.me/?text='+encodeURIComponent(msgs[LANG]||msgs.en),'_blank');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// RESTART
+// ══════════════════════════════════════════════════════════════════════════════
+function restart(){
+  A={services:[],feeling:'',expertise:'',ambience:'',stylists:[]};
+  document.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  ['n1','n2','n3','n4'].forEach(id=>document.getElementById(id).disabled=true);
+  document.getElementById('photoPreview').style.display='none';
+  document.getElementById('noPhotoYet').style.display='flex';
+  const cp=document.getElementById('camPhoto');if(cp)cp.value='';
+  window._photoFile=null;window._photoURL=null;
+  document.getElementById('copiedPill').style.display='none';
+  go(1);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CONFETTI
+// ══════════════════════════════════════════════════════════════════════════════
+function confetti(){
+  const w=document.getElementById('cw');w.innerHTML='';
+  const cols=['#D4567A','#C9922A','#F8D0DB','#A8334F','#F5A623','#FFF0F3','#25D366','#FFD700'];
+  for(let i=0;i<75;i++){
+    const e=document.createElement('div');e.className='cp';
+    e.style.cssText='left:'+Math.random()*100+'%;background:'+pick(cols)+';animation-duration:'+(1.2+Math.random()*2.2)+'s;animation-delay:'+(Math.random()*.8)+'s;width:'+(4+Math.random()*9)+'px;height:'+(4+Math.random()*9)+'px;border-radius:'+(Math.random()>.5?'50%':'2px')+';';
+    w.appendChild(e);
+  }
+  setTimeout(()=>w.innerHTML='',4500);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+go(1);
+</script>
+</body>
+</html>
